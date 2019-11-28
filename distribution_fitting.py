@@ -11,9 +11,13 @@ from sklearn.mixture import GaussianMixture as GMM
 
 demand, lmp = read_data()
 data = np.concatenate([demand[:,12:14].reshape([-1,2]),lmp[:,12:14].reshape([-1,2])],axis=1)
-standard = StandardScaler().fit(data)
-data_st= standard.transform(data)
-size=data.shape[0]
+desired_data= np.load('desired_data.npy')
+regular_data = np.load('regular_data.npy')
+
+standard = StandardScaler().fit(desired_data)
+
+data_st= standard.transform(desired_data)
+size=data_st.shape[0]
 
 k_means= cl.KMeans(n_clusters=2,max_iter=500)
 gmm_model= GMM(n_components= 2, covariance_type='full')
@@ -49,9 +53,9 @@ total_pdf=[]
 counter =np.linspace(-6,6,1000)
 for dist_name in distributions():
     dist = getattr(stat,dist_name)
-    param= dist.fit(data_st[:,0])
+    param= dist.fit(data_st)
     total_pdf.append(dist.pdf(counter,*param[:-2],loc=param[-2],scale=param[-1]))
-    total_p_value.append(p_value(data_st[:,0],dist_name,param))
+    total_p_value.append(p_value(data_st,dist_name,param))
     cdf_fitted = dist.cdf(percentile_cutoffs, *param[:-2], loc=param[-2],
                           scale=param[-1])
     expected_frequency = []

@@ -26,12 +26,18 @@ colors=np.concatenate([np.array([1 for i in range(demand.shape[0])]).reshape([-1
 import sklearn.cluster as cl
 
 kmeans = cl.KMeans(n_clusters=2)
-fit_km = kmeans.fit(data[:,0].reshape((-1,1)))
-predicted=fit_km.predict(data[:,0].reshape((-1,1)))
-label = ['Regular','Desired']
-new_col=list(map(lambda x: label[x],predicted))
+fit_km = kmeans.fit(demand)
+predicted=fit_km.predict(demand)
 
 
+desired_data=[]
+regular_data =[]
+tmp=demand
+for i,val in enumerate(tmp):
+    if predicted[i]==1:
+        desired_data.append(val)
+    else:
+        regular_data.append(val)
 
 from sklearn.mixture import GaussianMixture
 from sklearn.mixture import gaussian_mixture
